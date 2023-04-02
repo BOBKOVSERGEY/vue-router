@@ -21,16 +21,17 @@ const destination = ref({});
 //const destination = computed(() => sourceData.destinations.find(destination => destination.id === destinationId.value));
 
 onMounted(async () => {
-  const response =  await fetch(`https://travel-dummy-api.netlify.app/${route.params.slug}.json`)
-  destination.value = await response.json()
+  await initData();
 })
 
 watch(
     () => route.params,
-    async () => {
-      const response =  await fetch(`https://travel-dummy-api.netlify.app/${route.params.slug}.json`)
-      destination.value = await response.json()
-    }
+    initData
 );
+
+async function initData() {
+  const response =  await fetch(`https://travel-dummy-api.netlify.app/${route.params.slug}.json`)
+  destination.value = await response.json()
+}
 
 </script>
