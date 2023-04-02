@@ -1,5 +1,5 @@
 <template>
-  <section class="destination" v-if="destination">
+  <section class="destination">
     <h1>
       {{ destination.name}}
     </h1>
@@ -9,29 +9,38 @@
     </div>
   </section>
 
+  <section class="experiences">
+    <h2>Top Experiences in {{ destination.name }}</h2>
+    <div class="cards">
+      <router-link
+          v-for="experience in destination.experiences"
+          :key="experience.slug"
+          :to="{name: 'experience.show', params: { experienceSlug: experience.slug }}">
+          <ExperienceCard
+          :experience="experience" />
+      </router-link>
+    </div>
+  </section>
+
 </template>
 
 <script setup>
+import ExperienceCard from "@/components/ExperienceCard.vue";
 import { useRoute } from "vue-router";
 import sourceData from '@/data.json';
-import {computed, onMounted, ref, watch} from "vue";
+import {computed} from "vue";
 const route = useRoute();
-const destination = ref({});
-//const destinationId = computed(() => +route.params.id);
-//const destination = computed(() => sourceData.destinations.find(destination => destination.id === destinationId.value));
-
-onMounted(async () => {
-  await initData();
+const props = defineProps({
+  id: {
+    type: Number,
+    required: true
+  },
+  slug: {
+    type: String,
+    required: true
+  }
 })
 
-watch(
-    () => route.params,
-    initData
-);
-
-async function initData() {
-  const response =  await fetch(`https://travel-dummy-api.netlify.app/${route.params.slug}.json`)
-  destination.value = await response.json()
-}
+const destination = computed(() => sourceData.destinations.find(destination => destination.id === props.id));
 
 </script>
